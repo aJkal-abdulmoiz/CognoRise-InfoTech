@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings</title>
+    <!-- Include any necessary CSS styles here -->
+    <style>
+        /* Define your CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>My Bookings</h1>
+    <div id="bookingsList">
+        <!-- Bookings will be dynamically populated here -->
+    </div>
+
+    <!-- Include any necessary JavaScript code here -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Fetch the user's bookings from the backend API
+                const response = await fetch('/bookings', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch bookings');
+                }
+
+                const bookings = await response.json();
+
+                // Dynamically generate HTML for each booking and append it to the #bookingsList element
+                const bookingsList = document.getElementById('bookingsList');
+                bookings.forEach(booking => {
+                    const bookingHTML = `
+                        <div class="booking">
+                            <p>Booking ID: ${booking.id}</p>
+                            <p>Destination: ${booking.destination}</p>
+                            <p>Date: ${booking.date}</p>
+                            <p>Total Price: ${booking.totalPrice}</p>
+                        </div>
+                    `;
+                    bookingsList.insertAdjacentHTML('beforeend', bookingHTML);
+                });
+            } catch (error) {
+                console.error('Error fetching bookings:', error);
+                // Handle error - display error message to user
+            }
+        });
+    </script>
+</body>
+</html>

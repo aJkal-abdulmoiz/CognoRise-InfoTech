@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fffdfd;
+        }
+        .main-container{
+            display: flex;
+            justify-content: space-between;
+            max-width:  80%;
+            margin: 30px 15px;
+            padding: 10px 40px;
+            background-color: #fff;
+            
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            max-width:  100%;
+            margin: 40px 15px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: #333;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .location-image img {
+            max-width:45%;
+            border-radius: 10px;
+        }
+
+        .booking-form {
+         
+            min-width: 100%;
+            min-height: 70%;
+        }
+
+        .booking-form h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .booking-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .booking-form input[type="date"],
+        .booking-form input[type="text"],
+        .booking-form input[type="tel"],
+        .booking-form input[type="number"],
+        .booking-form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .booking-form input[type="submit"] {
+            background-color: #FDA403;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .booking-form input[type="submit"]:hover {
+            box-shadow: #333;
+        }    
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-container ">
+            <div class="pic-container container">
+                <div class="location-image">
+                    <img id="locationImage" src="" alt="Location Image">
+                </div>
+                <div class="details-container container">
+                    <h3></h3>
+                </div>
+            </div>
+        </div>
+        <div class="right-container">
+            <div class="booking-form container">
+                <form id="bookingForm">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+    
+                    <label for="name">Your Name:</label>
+                    <input type="text" id="name" name="name" required>
+    
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="+92-">
+    
+                    <label for="persons">Number of Persons:</label>
+                    <input type="number" id="persons" name="persons" min="1" value="1" required>
+                    
+                    <label for="total">Total Cost:</label>
+                    <input type="text" id="total" name="total" readonly>
+    
+                    <input type="submit" value="Confirm Booking">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const queryParams = new URLSearchParams(window.location.search);
+    const destination = queryParams.get('name'); // Assuming 'name' corresponds to destination
+    const pricePerPerson = parseInt(queryParams.get('rate').match(/\d+/)[0]); // Assuming 'rate' contains the price
+    
+    document.getElementById('locationImage').src = queryParams.get('image');
+    document.querySelector('h3').innerText = destination;
+
+    const personsInput = document.getElementById('persons');
+    const totalInput = document.getElementById('total');
+
+    personsInput.addEventListener('input', function() {
+        const persons = parseInt(personsInput.value);
+        const total = persons * pricePerPerson;
+        totalInput.value = '$ ' + total; // Ensure total is formatted properly
+    });
+
+    const bookingForm = document.getElementById('bookingForm');
+    bookingForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+            
+        const formData = new FormData(bookingForm);
+        const name = formData.get('name');
+        const date = formData.get('date');
+        const phone = formData.get('phone');
+        const destination = queryParams.get('name');
+        const price = formData.get('persons');
+
+
+        try {
+            const response = await fetch('/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, destination, date, price, phone, persons })
+            });
+
+            if (!response.ok) {
+                throw new Error('Booking failed');
+            }
+
+            alert('Booking successful!');
+            // Optionally, you can redirect the user after successful booking
+            // window.location.href = '/'; // Redirect to homepage
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Booking failed. Please try again.');
+        }
+    });
+        });
+    </script>
+    
+</body>
+</html>
